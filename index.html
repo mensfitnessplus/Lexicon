@@ -112,6 +112,13 @@
     .form-input, .form-textarea { width: 100%; background: var(--bg); border: 1.5px solid var(--border); border-radius: var(--radius-md); padding: 10px 14px; font-family: var(--font-body); font-size: 0.95rem; color: var(--text-primary); transition: var(--transition); outline: none; }
     .form-input:focus, .form-textarea:focus { border-color: var(--accent); }
     .form-textarea { resize: vertical; min-height: 120px; }
+    .field-wrap { position: relative; }
+    .field-wrap .form-input { padding-right: 32px; }
+    .field-wrap .form-textarea { padding-right: 32px; }
+    .field-clear { position: absolute; top: 50%; right: 10px; transform: translateY(-50%); background: transparent; border: none; cursor: pointer; color: var(--text-muted); font-size: 0.85rem; line-height: 1; padding: 2px 4px; border-radius: 50%; transition: var(--transition); display: none; }
+    .field-wrap.has-value .field-clear { display: block; }
+    .field-clear:hover { color: var(--text-primary); background: var(--surface-alt); }
+    .field-wrap--textarea .field-clear { top: 10px; transform: none; }
     .btn-fetch { background: var(--surface-alt); border: 1.5px solid var(--border); border-radius: var(--radius-md); padding: 0 14px; cursor: pointer; transition: var(--transition); color: var(--text-secondary); font-family: var(--font-body); font-weight: 600; font-size: 0.8rem; white-space: nowrap; display: flex; align-items: center; gap: 0.3rem; }
     .btn-fetch:hover:not(:disabled) { background: var(--border); color: var(--text-primary); }
     .btn-fetch:disabled { opacity: 0.6; cursor: not-allowed; }
@@ -276,12 +283,15 @@
     .flashcard.is-flipped { transform: rotateY(180deg); }
     .flashcard-face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center; }
     .flashcard-front { background: var(--surface); border: 1px solid var(--border); }
-    .flashcard-back { background: var(--surface-alt); border: 1px solid var(--border); transform: rotateY(180deg); overflow-y: auto; }
+    /* Back face: flex column, no overflow on the face itself */
+    .flashcard-back { background: var(--surface-alt); border: 1px solid var(--border); transform: rotateY(180deg); overflow: hidden; justify-content: flex-start; padding: 0; }
+    .flashcard-back-inner { flex: 1; overflow-y: auto; padding: 1.5rem 1.5rem 0.75rem; width: 100%; display: flex; flex-direction: column; align-items: center; text-align: center; }
     .flashcard-hint { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 1rem; }
     .flashcard-word { font-family: var(--font-display); font-size: 2.2rem; font-weight: 700; line-height: 1.2; color: var(--text-primary); word-break: break-word; }
-    .flashcard-definition { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6; max-width: 380px; margin-bottom: 1rem; white-space: pre-wrap; text-align: left; }
+    .flashcard-definition { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6; max-width: 380px; margin-bottom: 0.5rem; white-space: pre-wrap; text-align: left; width: 100%; }
     .flashcard-level-badge { position: absolute; top: 1.2rem; left: 1.5rem; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; background: var(--accent-light); color: var(--accent); padding: 3px 9px; border-radius: 99px; }
-    .srs-controls { display: flex; gap: 0.5rem; opacity: 0; pointer-events: none; transition: opacity 0.3s; width: 100%; justify-content: center; margin-top: auto; padding-top: 1rem;}
+    /* SRS controls: fixed footer at bottom of card, always visible after flip */
+    .srs-controls { display: flex; gap: 0.5rem; opacity: 0; pointer-events: none; transition: opacity 0.3s; width: 100%; justify-content: center; padding: 0.6rem 1rem 0.8rem; border-top: 1px solid var(--border); flex-shrink: 0; background: var(--surface-alt); border-radius: 0 0 var(--radius-xl) var(--radius-xl); }
     .flashcard.is-flipped .srs-controls { opacity: 1; pointer-events: all; }
     .btn-srs { padding: 8px 12px; font-size: 0.8rem; font-weight: 600; border-radius: var(--radius-md); border: 1px solid var(--border); background: var(--surface); color: var(--text-secondary); cursor: pointer; transition: var(--transition); flex: 1; max-width: 120px; }
     .btn-srs:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); color: var(--text-primary); }
@@ -290,8 +300,11 @@
 
     /* ── HINT / MULTIPLE CHOICE ── */
     .quiz-hint-area { width: 100%; max-width: 520px; }
+    .hint-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem; }
     .btn-show-options { width: 100%; padding: 10px; background: var(--surface); border: 1.5px dashed var(--border); border-radius: var(--radius-md); font-family: var(--font-body); font-size: 0.82rem; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 0.4rem; }
     .btn-show-options:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+    .btn-hide-hint { background: transparent; border: none; cursor: pointer; color: var(--text-muted); font-size: 0.75rem; font-family: var(--font-body); font-weight: 600; padding: 4px 8px; border-radius: var(--radius-sm); transition: var(--transition); white-space: nowrap; }
+    .btn-hide-hint:hover { color: var(--accent); background: var(--accent-light); }
     .mc-options { display: none; flex-direction: column; gap: 0.5rem; animation: fadeIn 0.25s; }
     .mc-options.visible { display: flex; }
     .mc-option { padding: 10px 14px; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-md); font-family: var(--font-body); font-size: 0.85rem; color: var(--text-primary); cursor: pointer; transition: var(--transition); text-align: left; line-height: 1.4; white-space: pre-wrap; }
@@ -299,6 +312,14 @@
     .mc-option.correct { border-color: var(--lvl1-hue) !important; background: var(--lvl1-bg) !important; color: var(--lvl1-hue) !important; font-weight: 600; }
     .mc-option.wrong { border-color: var(--lvl5-hue) !important; background: var(--lvl5-bg) !important; color: var(--lvl5-hue) !important; }
     .mc-option:disabled { cursor: default; }
+
+    /* ── UNIVERSAL SORT BAR ── */
+    .sort-bar { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1rem; max-width: 600px; margin-left: auto; margin-right: auto; }
+    .sort-btn { padding: 5px 12px; border-radius: 99px; font-size: 0.75rem; font-weight: 600; border: 1px solid var(--border); background: var(--surface); color: var(--text-secondary); cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 0.3rem; }
+    .sort-btn:hover { background: var(--surface-alt); color: var(--text-primary); }
+    .sort-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .sort-dir-btn { padding: 5px 10px; border-radius: 99px; font-size: 0.8rem; font-weight: 700; border: 1px solid var(--border); background: var(--surface); color: var(--text-secondary); cursor: pointer; transition: var(--transition); }
+    .sort-dir-btn:hover { background: var(--surface-alt); color: var(--text-primary); }
 
     /* Nav controls */
     .quiz-controls { display: flex; align-items: center; gap: 1rem; }
@@ -329,7 +350,33 @@
     .tag-filter-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 
     /* ── SORT SELECT ── */
-    .mastered-sort-select { background: var(--surface-alt); color: var(--text-primary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 4px 8px; font-family: var(--font-body); font-size: 0.75rem; outline: none; cursor: pointer; margin-left: auto; }
+
+    /* ── DEFINITION LINE CLAMP ── */
+    .word-card-def.clamped { display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
+    .word-card-def.clamp-1 { -webkit-line-clamp: 1; }
+    .word-card-def.clamp-2 { -webkit-line-clamp: 2; }
+    .word-card-def.clamp-3 { -webkit-line-clamp: 3; }
+    .word-card-def.clamp-4 { -webkit-line-clamp: 4; }
+    .word-card-def.clamp-5 { -webkit-line-clamp: 5; }
+
+    /* ── SETTINGS: DEF LINES PICKER ── */
+    .def-lines-picker { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .def-line-btn { height: 34px; min-width: 40px; padding: 0 10px; border-radius: var(--radius-sm); border: 1.5px solid var(--border); background: var(--bg); cursor: pointer; font-family: var(--font-body); font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); transition: var(--transition); }
+    .def-line-btn:hover { background: var(--surface-alt); }
+    .def-line-btn.selected { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+
+    /* ── WORD DETAIL MODAL ── */
+    .word-detail-modal { max-width: 520px; }
+    .word-detail-title { font-family: var(--font-display); font-size: 1.8rem; font-weight: 700; line-height: 1.2; color: var(--text-primary); margin-bottom: 0.2rem; }
+    .word-detail-badge { display: inline-block; font-size: 0.65rem; font-weight: 700; padding: 3px 10px; border-radius: 99px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem; }
+    .word-detail-section-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 0.35rem; }
+    .word-detail-def { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.65; white-space: pre-wrap; }
+    .word-detail-example { font-size: 0.85rem; color: var(--text-muted); line-height: 1.55; font-style: italic; border-left: 3px solid var(--border); padding-left: 0.75rem; }
+    .word-detail-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .word-detail-divider { border: none; border-top: 1px solid var(--border); margin: 1.1rem 0; }
+    .word-detail-actions { display: flex; gap: 0.6rem; margin-top: 1.5rem; }
+    .word-detail-actions .btn-cancel { flex: 1; }
+    .word-detail-actions .btn-save { flex: 2; }
 
     /* ── TOAST ── */
     .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--text-primary); color: var(--bg); font-size: 0.85rem; font-weight: 500; padding: 10px 20px; border-radius: var(--radius-md); z-index: 999; opacity: 0; transition: opacity 0.3s, transform 0.3s; pointer-events: none; text-align: center; white-space: nowrap; }
@@ -394,7 +441,10 @@
       <div class="form-group">
         <label class="form-label" for="inputWord">Word</label>
         <div class="input-with-button">
-          <input class="form-input" id="inputWord" type="text" placeholder="e.g. Ephemeral" autocomplete="off"/>
+          <div class="field-wrap" id="wordWrap" style="flex:1;">
+            <input class="form-input" id="inputWord" type="text" placeholder="e.g. Ephemeral" autocomplete="off" oninput="updateFieldClear('inputWord','wordWrap')"/>
+            <button class="field-clear" tabindex="-1" title="Clear" onclick="clearField('inputWord','wordWrap')">✕</button>
+          </div>
           <button class="btn-fetch" id="btnFetch" onclick="handleFetchDefinition()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             Fetch
@@ -405,13 +455,19 @@
         <label class="form-label" for="inputDefinition">
           Definition & Synonyms <span class="form-label-hint">(Optional — Leave blank for Inbox)</span>
         </label>
-        <textarea class="form-textarea" id="inputDefinition" placeholder="e.g. Lasting for a very short time; transitory."></textarea>
+        <div class="field-wrap field-wrap--textarea" id="defWrap">
+          <textarea class="form-textarea" id="inputDefinition" placeholder="e.g. Lasting for a very short time; transitory." oninput="updateFieldClear('inputDefinition','defWrap')"></textarea>
+          <button class="field-clear" tabindex="-1" title="Clear" onclick="clearField('inputDefinition','defWrap')">✕</button>
+        </div>
       </div>
       <div class="form-group">
         <label class="form-label" for="inputExample">
           Example Sentence <span class="form-label-hint">(Optional)</span>
         </label>
-        <textarea class="form-textarea" id="inputExample" placeholder="e.g. The ephemeral beauty of cherry blossoms makes them all the more special." style="min-height:70px;"></textarea>
+        <div class="field-wrap field-wrap--textarea" id="exWrap">
+          <textarea class="form-textarea" id="inputExample" placeholder="e.g. The ephemeral beauty of cherry blossoms makes them all the more special." style="min-height:70px;" oninput="updateFieldClear('inputExample','exWrap')"></textarea>
+          <button class="field-clear" tabindex="-1" title="Clear" onclick="clearField('inputExample','exWrap')">✕</button>
+        </div>
       </div>
       <div class="form-group">
         <label class="form-label">Tags <span class="form-label-hint">(Optional — press Enter or comma)</span></label>
@@ -446,6 +502,18 @@
         </button>
       </div>
       <div class="settings-option">
+        <p><strong>Definition Preview Lines</strong><br>How many lines of the definition to show on each word card. Click a card to see the full entry.</p>
+        <div class="def-lines-picker" id="defLinesPicker">
+          <button class="def-line-btn" data-lines="0" onclick="setDefLines(0)">None</button>
+          <button class="def-line-btn" data-lines="1" onclick="setDefLines(1)">1</button>
+          <button class="def-line-btn" data-lines="2" onclick="setDefLines(2)">2</button>
+          <button class="def-line-btn" data-lines="3" onclick="setDefLines(3)">3</button>
+          <button class="def-line-btn" data-lines="4" onclick="setDefLines(4)">4</button>
+          <button class="def-line-btn" data-lines="5" onclick="setDefLines(5)">5</button>
+          <button class="def-line-btn" data-lines="99" onclick="setDefLines(99)">Full</button>
+        </div>
+      </div>
+      <div class="settings-option">
         <p><strong>Bulk Import Words</strong><br>Paste words separated by commas to easily add them directly to your Inbox.</p>
         <textarea id="bulkImportText" class="form-textarea" placeholder="e.g. elucidate, sycophant, fastidious" style="min-height: 70px; margin-bottom: 0.5rem;"></textarea>
         <button class="btn-primary" onclick="handleBulkImport()">➕ Bulk Add</button>
@@ -459,6 +527,13 @@
         <div class="file-input-wrapper">
           <button class="btn-primary" style="width:100%;">⬆️ Select Backup File</button>
           <input type="file" id="importFile" accept=".json" onchange="importData(event)">
+        </div>
+      </div>
+      <div class="settings-option">
+        <p><strong>Import Friend's Backup</strong><br>Merge a friend's vocabulary list into yours. Only new words (not already in your collection) will be added. All imported words are set to <strong>Level 1</strong> so their SRS history doesn't affect your progress.</p>
+        <div class="file-input-wrapper">
+          <button class="btn-primary" style="width:100%; background: var(--lvl2-hue);">🤝 Select Friend's File</button>
+          <input type="file" id="importFriendFile" accept=".json" onchange="importFriendData(event)">
         </div>
       </div>
     </div>
@@ -492,6 +567,14 @@
       <button id="btnBulkSelect" class="btn-quiz" onclick="toggleBulkMode()" style="padding: 6px 12px; font-size:0.75rem;">Select Words</button>
     </div>
 
+    <div class="sort-bar" id="sortBar">
+      <span style="font-size:0.72rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;">Sort:</span>
+      <button class="sort-btn active" data-sort="added" onclick="setSortType('added')">📅 Date Added</button>
+      <button class="sort-btn" data-sort="modified" onclick="setSortType('modified')">✏️ Modified</button>
+      <button class="sort-btn" data-sort="title" onclick="setSortType('title')">🔤 A–Z</button>
+      <button class="sort-dir-btn" id="sortDirBtn" onclick="toggleSortDir()" title="Toggle sort direction">↓</button>
+    </div>
+
     <div class="tag-filter-bar" id="tagFilterBar" style="display:none;">
       <span class="tag-filter-label">Tags:</span>
       <button class="tag-filter-chip active" data-tag="all" onclick="handleTagFilter('all')">All</button>
@@ -506,14 +589,9 @@
       <div class="level-column" data-level="5"><div class="column-header"><div class="column-header-left"><span class="level-dot"></span><span class="column-title">Level 5 Overview</span></div><span class="column-count" id="count-5">0</span></div><div class="column-body" id="column-body-5"></div></div>
 <div class="level-column" data-level="6">
         <div class="column-header">
-          <div class="column-header-left" style="flex:1; display:flex; align-items:center;">
+          <div class="column-header-left">
             <span class="level-dot"></span>
             <span class="column-title" style="margin-left: 0.55rem;">All Words</span>
-            <select id="masteredSort" class="mastered-sort-select" onchange="renderDashboard()">
-              <option value="added">Sort: Date Added</option>
-              <option value="modified">Sort: Date Modified</option>
-              <option value="title">Sort: Title (A-Z)</option>
-            </select>
           </div>
           <span class="column-count" id="count-6">0</span>
         </div>
@@ -593,10 +671,12 @@
             <h2 class="flashcard-word" id="flashcardWord">—</h2>
           </div>
           <div class="flashcard-face flashcard-back">
-            <span class="flashcard-level-badge" id="flashcardLevelBadgeBack">Level —</span>
-            <p class="flashcard-hint" style="margin-bottom:0.5rem;">Definition</p>
-            <h2 class="flashcard-word" id="flashcardWordBack" style="font-size:1.3rem;margin-bottom:0.5rem;">—</h2>
-            <p class="flashcard-definition" id="flashcardDefinition">—</p>
+            <div class="flashcard-back-inner">
+              <span class="flashcard-level-badge" id="flashcardLevelBadgeBack" style="position:relative;top:auto;left:auto;margin-bottom:0.6rem;align-self:flex-start;">Level —</span>
+              <p class="flashcard-hint" style="margin-bottom:0.4rem;">Definition</p>
+              <h2 class="flashcard-word" id="flashcardWordBack" style="font-size:1.3rem;margin-bottom:0.5rem;">—</h2>
+              <p class="flashcard-definition" id="flashcardDefinition">—</p>
+            </div>
             <div class="srs-controls">
               <button class="btn-srs down" onclick="handleSrsAction(event, -1)">⬇️ Lvl Down</button>
               <button class="btn-srs" onclick="handleSrsAction(event, 0)">➖ Same</button>
@@ -607,11 +687,17 @@
       </div>
 
       <div class="quiz-hint-area" id="quizHintArea">
-        <button class="btn-show-options" id="btnShowOptions" onclick="showMultipleChoice()">
-          💡 Need a hint? Show options
-        </button>
+        <div class="hint-header" id="hintHeader">
+          <button class="btn-show-options" id="btnShowOptions" onclick="showMultipleChoice()" style="flex:1;">
+            💡 Need a hint? Show options
+          </button>
+          <button class="btn-hide-hint" onclick="toggleHintArea()" title="Hide hint area" id="btnHideHint">✕ Hide</button>
+        </div>
         <div class="mc-options" id="mcOptions"></div>
       </div>
+      <button class="btn-show-options" id="btnRevealHint" onclick="toggleHintArea()" style="display:none; max-width:520px; width:100%; opacity:0.6;">
+        💡 Show hint
+      </button>
 
       <div class="quiz-controls">
         <button class="btn-nav" id="btnPrev" onclick="handlePrevCard()" disabled>
@@ -630,11 +716,32 @@
 
   <div class="toast" id="toast"></div>
 
+  <!-- ── WORD DETAIL MODAL ── -->
+  <div class="modal-backdrop" id="wordDetailBackdrop" onclick="handleBackdropClick(event, 'wordDetailBackdrop')">
+    <div class="modal word-detail-modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="detailModalHeading">Word</h2>
+        <button class="btn-modal-close" onclick="closeWordDetail()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div id="wordDetailBody"></div>
+      <div class="word-detail-actions">
+        <button class="btn-cancel" onclick="closeWordDetail()">Close</button>
+        <button class="btn-cancel" id="detailResetLevelBtn" onclick="resetWordToLevel1()" title="Push back to Level 1 for re-study" style="flex:1.2;">↩️ Reset to Lvl 1</button>
+        <button class="btn-save" id="detailEditBtn" onclick="">✏️ Edit</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    const STORAGE_KEY = 'lexicon_vocab_data';
-    const THEME_KEY   = 'lexicon_theme';
-    const STREAK_KEY  = 'lexicon_streak';
-    const WOTD_KEY    = 'lexicon_wotd';
+    const STORAGE_KEY    = 'lexicon_vocab_data';
+    const THEME_KEY      = 'lexicon_theme';
+    const STREAK_KEY     = 'lexicon_streak';
+    const WOTD_KEY       = 'lexicon_wotd';
+    const DEF_LINES_KEY  = 'lexicon_def_lines';
+
+    let defLinesLimit = parseInt(localStorage.getItem(DEF_LINES_KEY) ?? '4'); // 0=none, 1-5=lines, 99=full
 
     let selectedLevel        = 1;
     let activeDashboardLevel = 1;
@@ -647,6 +754,10 @@
 
     let isBulkMode           = false;
     let selectedWords        = new Set();
+
+    let sortType             = 'added';   // 'added' | 'modified' | 'title'
+    let sortAsc              = false;      // false = newest/Z first by default
+    let hintAreaVisible      = true;
 
     /* ────────────────────────────────────────
        1. THEME (CYCLE)
@@ -807,6 +918,7 @@
             document.getElementById('inputExample').value = firstExample;
           }
           showToast('Definitions & Synonyms retrieved!');
+          syncAllFieldClears();
         } else {
           showToast('No detailed definition found.');
         }
@@ -920,6 +1032,7 @@
       tagDatalist.innerHTML = getAllTags(getAllWords()).map(t => `<option value="${escapeHtml(t)}">`).join('');
 
       document.getElementById('modalBackdrop').classList.add('is-open');
+      syncAllFieldClears();
     }
 
     /* Bulk Logic */
@@ -1141,17 +1254,16 @@
         }
       });
 
-      const masteredSortType = document.getElementById('masteredSort')?.value || 'added';
-
-     for (let i = 0; i <= 7; i++) {
+      for (let i = 0; i <= 7; i++) {
              let list = buckets[i];
-        if (i === 6) {
-          list.sort((a, b) => {
-            if (masteredSortType === 'title') return a.word.localeCompare(b.word);
-            if (masteredSortType === 'modified') return (b.dateModified || parseInt(b.id)) - (a.dateModified || parseInt(a.id));
-            return (b.dateAdded || parseInt(b.id)) - (a.dateAdded || parseInt(a.id));
-          });
-        }
+        // Universal sort applied to all buckets
+        list.sort((a, b) => {
+          let cmp;
+          if (sortType === 'title') cmp = a.word.localeCompare(b.word);
+          else if (sortType === 'modified') cmp = (b.dateModified || parseInt(b.id)) - (a.dateModified || parseInt(a.id));
+          else cmp = (b.dateAdded || parseInt(b.id)) - (a.dateAdded || parseInt(a.id));
+          return sortAsc ? -cmp : cmp;
+        });
 
         const tabCountEl = document.getElementById(`tab-count-${i}`);
                   if (tabCountEl) tabCountEl.textContent = `(${list.length})`;
@@ -1168,10 +1280,18 @@
             
             if (isBulkMode) {
                card.onclick = (e) => handleCardClick(item.id, e);
+            } else {
+               card.onclick = (e) => openWordDetail(item.id, e);
+               card.style.cursor = 'pointer';
             }
 
 const tagsHtml = (item.tags||[]).length ? `<div class="word-card-tags">${item.tags.map(t=>`<span class="word-tag">${escapeHtml(t)}</span>`).join('')}</div>` : '';
             const exHtml   = item.example ? `<div class="word-card-example">${escapeHtml(item.example)}</div>` : '';
+            
+            // Definition clamping
+            const defClampClass = defLinesLimit === 0 ? 'word-card-def' : (defLinesLimit === 99 ? 'word-card-def' : `word-card-def clamped clamp-${defLinesLimit}`);
+            const defDisplay    = defLinesLimit === 0 ? '' : (item.definition ? escapeHtml(item.definition) : 'Awaiting definition…');
+            const defHtml       = defLinesLimit === 0 ? '' : `<div class="${defClampClass}">${defDisplay}</div>`;
             
             // Dynamically generate the correct color and text for the level badge
             const lvlColors = ['lvl0','lvl1','lvl2','lvl3','lvl4','lvl5','lvl6','lvl7'];
@@ -1185,7 +1305,7 @@ const tagsHtml = (item.tags||[]).length ? `<div class="word-card-tags">${item.ta
                 ${badgeHtml}
                 <button class="btn-pronounce" onclick="pronounceCard(event, '${escapeHtml(item.word)}')" title="Pronounce">🔊</button>
               </div>
-              <div class="word-card-def">${item.definition ? escapeHtml(item.definition) : 'Awaiting definition…'}</div>
+              ${defHtml}
               ${exHtml}${tagsHtml}
               <div class="card-actions">
                 <button class="btn-card-action" onclick="openEditModal('${item.id}', event)" title="Edit">✏️</button>
@@ -1315,6 +1435,9 @@ const tagsHtml = (item.tags||[]).length ? `<div class="word-card-tags">${item.ta
       document.getElementById('btnShowOptions').style.display = 'flex';
       const mc = document.getElementById('mcOptions');
       mc.classList.remove('visible'); mc.innerHTML = '';
+      // Restore hint area visibility per user preference
+      document.getElementById('quizHintArea').style.display = hintAreaVisible ? 'block' : 'none';
+      document.getElementById('btnRevealHint').style.display = hintAreaVisible ? 'none' : 'flex';
     }
 
     function showMultipleChoice() {
@@ -1350,6 +1473,7 @@ const tagsHtml = (item.tags||[]).length ? `<div class="word-card-tags">${item.ta
 
     /* ── Nav ── */
     function handleOpenQuiz() {
+      hintAreaVisible = true;
       document.querySelectorAll('.quiz-filter-btn').forEach(b => {
         const v = b.dataset.filter;
         b.classList.toggle('active', v === 'all' ? selectedQuizLevels.size === 5 : selectedQuizLevels.has(v));
@@ -1413,10 +1537,82 @@ const tagsHtml = (item.tags||[]).length ? `<div class="word-card-tags">${item.ta
       tagDatalist.innerHTML = getAllTags(getAllWords()).map(t => `<option value="${escapeHtml(t)}">`).join('');
       
       document.getElementById('modalBackdrop').classList.add('is-open');
+      syncAllFieldClears();
       setTimeout(() => document.getElementById('inputWord').focus(), 100);
     }
     function handleCloseModal() { document.getElementById('modalBackdrop').classList.remove('is-open'); }
-    function handleOpenSettings() { document.getElementById('settingsModal').classList.add('is-open'); }
+
+    /* ── UNIVERSAL SORT ── */
+    function setSortType(type) {
+      sortType = type;
+      document.querySelectorAll('.sort-btn').forEach(b => b.classList.toggle('active', b.dataset.sort === type));
+      renderDashboard();
+    }
+    function toggleSortDir() {
+      sortAsc = !sortAsc;
+      document.getElementById('sortDirBtn').textContent = sortAsc ? '↑' : '↓';
+      document.getElementById('sortDirBtn').title = sortAsc ? 'Ascending' : 'Descending';
+      renderDashboard();
+    }
+
+    /* ── HIDE / SHOW HINT ── */
+    function toggleHintArea() {
+      hintAreaVisible = !hintAreaVisible;
+      document.getElementById('quizHintArea').style.display = hintAreaVisible ? 'block' : 'none';
+      document.getElementById('btnRevealHint').style.display = hintAreaVisible ? 'none' : 'flex';
+      // Reset MC options when hiding
+      if (!hintAreaVisible) {
+        document.getElementById('mcOptions').classList.remove('visible');
+        document.getElementById('mcOptions').innerHTML = '';
+        document.getElementById('btnShowOptions').style.display = 'flex';
+      }
+    }
+
+    /* ── DEFINITION LINES SETTING ── */
+    function setDefLines(n) {
+      defLinesLimit = n;
+      localStorage.setItem(DEF_LINES_KEY, n.toString());
+      document.querySelectorAll('.def-line-btn').forEach(b => b.classList.toggle('selected', parseInt(b.dataset.lines) === n));
+      renderDashboard();
+    }
+    function initDefLinesPicker() {
+      document.querySelectorAll('.def-line-btn').forEach(b => b.classList.toggle('selected', parseInt(b.dataset.lines) === defLinesLimit));
+    }
+
+    /* ── WORD DETAIL MODAL ── */
+    function openWordDetail(wordId, event) {
+      if (event) event.stopPropagation();
+      const word = getAllWords().find(w => w.id === wordId); if (!word) return;
+      const lvlColors = ['lvl0','lvl1','lvl2','lvl3','lvl4','lvl5','lvl6','lvl7'];
+      const lvlNum = word.level || 0;
+      const lvlName = lvlNum === 0 ? 'Inbox' : (lvlNum === 7 ? 'Archive' : `Level ${lvlNum}`);
+      const badgeBg  = `var(--${lvlColors[lvlNum]}-bg)`;
+      const badgeCol = `var(--${lvlColors[lvlNum]}-hue)`;
+
+      const tagsHtml = (word.tags||[]).length
+        ? `<hr class="word-detail-divider"><div class="word-detail-section-label">Tags</div><div class="word-detail-tags">${word.tags.map(t=>`<span class="word-tag" style="font-size:0.78rem;padding:3px 12px;">${escapeHtml(t)}</span>`).join('')}</div>`
+        : '';
+      const exHtml = word.example
+        ? `<hr class="word-detail-divider"><div class="word-detail-section-label">Example</div><div class="word-detail-example">${escapeHtml(word.example)}</div>`
+        : '';
+      const defHtml = word.definition
+        ? `<hr class="word-detail-divider"><div class="word-detail-section-label">Definition</div><div class="word-detail-def">${escapeHtml(word.definition)}</div>`
+        : `<hr class="word-detail-divider"><div class="word-detail-def" style="font-style:italic;color:var(--text-muted);">No definition yet — tap Edit to add one.</div>`;
+
+      document.getElementById('detailModalHeading').textContent = word.word;
+      document.getElementById('wordDetailBody').innerHTML = `
+        <span class="word-detail-badge" style="background:${badgeBg};color:${badgeCol};">${lvlName}</span>
+        <button class="btn-pronounce" style="font-size:1.1rem;margin-left:0.4rem;" onclick="speakWord('${escapeHtml(word.word)}')" title="Pronounce">🔊</button>
+        ${defHtml}${exHtml}${tagsHtml}`;
+      document.getElementById('detailEditBtn').onclick = () => { closeWordDetail(); openEditModal(word.id); };
+      document.getElementById('wordDetailBackdrop').classList.add('is-open');
+    }
+    function closeWordDetail() { document.getElementById('wordDetailBackdrop').classList.remove('is-open'); }
+
+    function handleOpenSettings() {
+      initDefLinesPicker();
+      document.getElementById('settingsModal').classList.add('is-open');
+    }
     function handleBackdropClick(e, id) { if (e.target === document.getElementById(id)) document.getElementById(id).classList.remove('is-open'); }
     function handleLevelSelect(level) {
       selectedLevel = level;
@@ -1430,8 +1626,96 @@ const tagsHtml = (item.tags||[]).length ? `<div class="word-card-tags">${item.ta
       return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
     }
 
+    /* ────────────────────────────────────────
+       FEATURE 2a — RESET/CLEAR MODAL FIELDS
+    ──────────────────────────────────────── */
+    function updateFieldClear(inputId, wrapId) {
+      const el = document.getElementById(inputId);
+      const wrap = document.getElementById(wrapId);
+      if (!el || !wrap) return;
+      wrap.classList.toggle('has-value', el.value.length > 0);
+    }
+    function clearField(inputId, wrapId) {
+      const el = document.getElementById(inputId);
+      if (!el) return;
+      el.value = '';
+      updateFieldClear(inputId, wrapId);
+      el.focus();
+    }
+    function syncAllFieldClears() {
+      updateFieldClear('inputWord',       'wordWrap');
+      updateFieldClear('inputDefinition', 'defWrap');
+      updateFieldClear('inputExample',    'exWrap');
+    }
+    function resetModalFields() {
+      document.getElementById('inputWord').value       = '';
+      document.getElementById('inputDefinition').value = '';
+      document.getElementById('inputExample').value    = '';
+      syncAllFieldClears();
+      document.getElementById('inputWord').focus();
+    }
+
+    /* ────────────────────────────────────────
+       FEATURE 2b — RESET WORD TO LEVEL 1
+    ──────────────────────────────────────── */
+    function resetWordToLevel1() {
+      const heading = document.getElementById('detailModalHeading').textContent;
+      const words   = getAllWords();
+      const idx     = words.findIndex(w => w.word === heading);
+      if (idx === -1) return;
+      if (!confirm(`Reset "${words[idx].word}" back to Level 1?`)) return;
+      words[idx].level        = 1;
+      words[idx].dateModified = Date.now();
+      saveWordStore(words);
+      renderDashboard();
+      closeWordDetail();
+      showToast(`"${words[idx].word}" reset to Level 1.`);
+    }
+
+    /* ────────────────────────────────────────
+       FEATURE 3 — IMPORT FRIEND'S VOCABULARY
+    ──────────────────────────────────────── */
+    function importFriendData(event) {
+      const file = event.target.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (!Array.isArray(imported)) throw new Error('Not an array');
+          const current     = getAllWords();
+          const existingSet = new Set(current.map(w => w.word.toLowerCase().trim()));
+          const now         = Date.now();
+          let added         = 0;
+
+          imported.forEach((w, i) => {
+            const wordStr = (w.word || '').trim();
+            if (!wordStr) return;
+            if (existingSet.has(wordStr.toLowerCase())) return; // skip duplicate
+            current.push({
+              id:           (now + i).toString(),
+              word:         wordStr,
+              definition:   w.definition || '',
+              example:      w.example    || '',
+              tags:         Array.isArray(w.tags) ? w.tags : [],
+              level:        1,   // Force Level 1 — ignore friend's SRS history
+              dateAdded:    now + i,
+              dateModified: now + i
+            });
+            existingSet.add(wordStr.toLowerCase());
+            added++;
+          });
+
+          saveWordStore(current);
+          renderDashboard();
+          showToast(`Imported ${added} new word${added !== 1 ? 's' : ''} from friend's list!`);
+          document.getElementById('settingsModal').classList.remove('is-open');
+        } catch { showToast('Error reading file — make sure it is a valid Lexicon JSON backup.'); }
+      };
+      reader.readAsText(file); event.target.value = '';
+    }
+
     document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') { handleCloseModal(); handleCloseQuiz(); document.getElementById('settingsModal').classList.remove('is-open'); }
+      if (e.key === 'Escape') { handleCloseModal(); handleCloseQuiz(); closeWordDetail(); document.getElementById('settingsModal').classList.remove('is-open'); }
     });
 
     document.addEventListener('click', e => {
