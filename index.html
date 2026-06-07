@@ -1446,5 +1446,11 @@ const tagsHtml = (item.tags||[]).length ? `<div class="word-card-tags">${item.ta
       switchDashboardLevel(1);
     });
   </script>
+  <script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./service-worker.js')
+    .then(() => console.log('Service Worker Registered'));
+}
+</script>
 </body>
 </html>
