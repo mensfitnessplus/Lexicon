@@ -218,6 +218,8 @@
     .word-card-word { font-family: var(--font-display); font-size: 0.95rem; font-weight: 600; margin-bottom: 0.3rem; padding-right: 3rem; }
     .word-card-def { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.45; white-space: pre-wrap; } 
     .word-card-example { font-size: 0.74rem; color: var(--text-muted); line-height: 1.4; margin-top: 0.35rem; font-style: italic; border-left: 2px solid var(--border); padding-left: 0.5rem; }
+    .word-card-source { font-size: 0.68rem; color: var(--text-muted); margin-top: 0.3rem; display: flex; align-items: center; gap: 0.3rem; }
+    .word-card-source svg { flex-shrink: 0; opacity: 0.6; }
     .word-card.inbox-card .word-card-def { font-style: italic; color: var(--text-muted); }
     .card-actions { position: absolute; top: 0.6rem; right: 0.6rem; display: flex; gap: 0.2rem; opacity: 0; transition: var(--transition); }
     .word-card:hover .card-actions { opacity: 1; }
@@ -474,6 +476,13 @@
         <div class="tag-input-wrap" id="tagInputWrap" onclick="document.getElementById('tagTextInput').focus()">
           <datalist id="existingTagsList"></datalist>
           <input class="tag-text-input" id="tagTextInput" type="text" list="existingTagsList" placeholder="e.g. GRE, literature…" autocomplete="off" onkeydown="handleTagKeydown(event)">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="inputSource">Source <span class="form-label-hint">(Optional — where did you find this word?)</span></label>
+        <div class="field-wrap" id="sourceWrap">
+          <input class="form-input" id="inputSource" type="text" placeholder="e.g. The New York Times, Novel: 1984, Podcast…" autocomplete="off" oninput="updateFieldClear('inputSource','sourceWrap')"/>
+          <button class="field-clear" tabindex="-1" title="Clear" onclick="clearField('inputSource','sourceWrap')">✕</button>
         </div>
       </div>
       <div class="form-group">
@@ -989,6 +998,7 @@
           words[idx].level = finalLevel; 
           words[idx].example = exText; 
           words[idx].tags = [...pendingTags];
+          words[idx].source = document.getElementById('inputSource').value.trim();
           words[idx].dateModified = now;
         }
         showToast(finalLevel === 0 ? 'Saved to Inbox' : `Updated "${wordText}"`);
@@ -1000,6 +1010,7 @@
           level: finalLevel, 
           example: exText, 
           tags: [...pendingTags],
+          source: document.getElementById('inputSource').value.trim(),
           dateAdded: now,
           dateModified: now
         });
@@ -1024,6 +1035,7 @@
       document.getElementById('inputWord').value       = word.word;
       document.getElementById('inputDefinition').value = word.definition || '';
       document.getElementById('inputExample').value    = word.example || '';
+      document.getElementById('inputSource').value     = word.source || '';
       pendingTags = [...(word.tags || [])]; renderPendingTags();
       handleLevelSelect(word.level === 0 ? 1 : word.level);
       
@@ -1286,6 +1298,7 @@
             }
 
 const tagsHtml = (item.tags||[]).length ? `<div class="word-card-tags">${item.tags.map(t=>`<span class="word-tag">${escapeHtml(t)}</span>`).join('')}</div>` : '';
+            const sourceHtml = item.source ? `<div class="word-card-source"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>${escapeHtml(item.source)}</div>` : '';
             const exHtml   = item.example ? `<div class="word-card-example">${escapeHtml(item.example)}</div>` : '';
             
             // Definition clamping
@@ -1306,7 +1319,7 @@ const tagsHtml = (item.tags||[]).length ? `<div class="word-card-tags">${item.ta
                 <button class="btn-pronounce" onclick="pronounceCard(event, '${escapeHtml(item.word)}')" title="Pronounce">🔊</button>
               </div>
               ${defHtml}
-              ${exHtml}${tagsHtml}
+              ${exHtml}${tagsHtml}${sourceHtml}
               <div class="card-actions">
                 <button class="btn-card-action" onclick="openEditModal('${item.id}', event)" title="Edit">✏️</button>
                 <button class="btn-card-action delete" onclick="deleteWord('${item.id}', event)" title="Delete">🗑️</button>
@@ -1592,6 +1605,9 @@ const tagsHtml = (item.tags||[]).length ? `<div class="word-card-tags">${item.ta
       const tagsHtml = (word.tags||[]).length
         ? `<hr class="word-detail-divider"><div class="word-detail-section-label">Tags</div><div class="word-detail-tags">${word.tags.map(t=>`<span class="word-tag" style="font-size:0.78rem;padding:3px 12px;">${escapeHtml(t)}</span>`).join('')}</div>`
         : '';
+      const sourceHtml = word.source
+        ? `<hr class="word-detail-divider"><div class="word-detail-section-label">Source</div><div class="word-detail-example" style="font-style:normal;">📖 ${escapeHtml(word.source)}</div>`
+        : '';
       const exHtml = word.example
         ? `<hr class="word-detail-divider"><div class="word-detail-section-label">Example</div><div class="word-detail-example">${escapeHtml(word.example)}</div>`
         : '';
@@ -1603,7 +1619,7 @@ const tagsHtml = (item.tags||[]).length ? `<div class="word-card-tags">${item.ta
       document.getElementById('wordDetailBody').innerHTML = `
         <span class="word-detail-badge" style="background:${badgeBg};color:${badgeCol};">${lvlName}</span>
         <button class="btn-pronounce" style="font-size:1.1rem;margin-left:0.4rem;" onclick="speakWord('${escapeHtml(word.word)}')" title="Pronounce">🔊</button>
-        ${defHtml}${exHtml}${tagsHtml}`;
+        ${defHtml}${exHtml}${tagsHtml}${sourceHtml}`;
       document.getElementById('detailEditBtn').onclick = () => { closeWordDetail(); openEditModal(word.id); };
       document.getElementById('wordDetailBackdrop').classList.add('is-open');
     }
@@ -1646,11 +1662,13 @@ const tagsHtml = (item.tags||[]).length ? `<div class="word-card-tags">${item.ta
       updateFieldClear('inputWord',       'wordWrap');
       updateFieldClear('inputDefinition', 'defWrap');
       updateFieldClear('inputExample',    'exWrap');
+      updateFieldClear('inputSource',     'sourceWrap');
     }
     function resetModalFields() {
       document.getElementById('inputWord').value       = '';
       document.getElementById('inputDefinition').value = '';
       document.getElementById('inputExample').value    = '';
+      document.getElementById('inputSource').value     = '';
       syncAllFieldClears();
       document.getElementById('inputWord').focus();
     }
